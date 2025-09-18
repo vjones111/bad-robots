@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -17,6 +19,12 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  
+  // SparkMax is a type of motor, the channel is where to find it on robot
+  private final PWMSparkMax m_motor1 = new PWMSparkMax(0);
+  private final PWMSparkMax m_motor2 = new PWMSparkMax(1);
+
+  private final PS5Controller m_ctrl = new PS5Controller(0); // port number is whatever, we're not *actually* doing it proper
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -77,9 +85,66 @@ public class Robot extends TimedRobot {
     }
   }
 
-  /** This function is called periodically during operator control. */
+  private enum Spin {
+    FORWARDS,
+    BACKWARDS,
+    OFF;
+
+    private final double SPEED = 1.0;
+
+    public void set_motors(PWMSparkMax left, PWMSparkMax right) {
+      switch (this) {
+      case FORWARDS:
+        left.set(SPEED); // speed is in [-1,1]
+        right.set(-SPEED);
+        System.out.println("going forth");
+        break;
+      case BACKWARDS:
+        left.set(-SPEED);
+        right.set(SPEED);
+        System.out.println("retreating");
+        break;
+      case OFF:
+        left.stopMotor();
+        right.stopMotor();
+        System.out.println("legs broken");
+        break;
+      }
+    }
+  }
+
+  private Spin spin = Spin.OFF;
+
+  /** This function is called periodically during operator control.
+   * If you believe the docs, this is once per 20ms
+   */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    /*
+      "intake" of smth like a ball: two motors rolling the ball inwards/outwards
+    */
+
+    Spin before = this.spin;
+
+    if (m_ctrl.getCircleButtonPressed()) {
+      if (this.spin == Spin.FORWARDS) {
+        this.spin = Spin.OFF;
+      } else {
+        this.spin = Spin.FORWARDS;
+      }
+    } else if (m_ctrl.getSquareButtonPressed()) {
+      if (this.spin == Spin.BACKWARDS) {
+        this.spin = Spin.OFF;
+      } else {
+        this.spin = Spin.BACKWARDS;
+      }
+    }
+    
+    // avoid wasted i/o calls to motors
+    if (this.spin != before) {
+      this.spin.set_motors(m_motor1, m_motor2);
+    }
+  }
 
   @Override
   public void testInit() {

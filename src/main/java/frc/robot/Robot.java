@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -17,6 +18,13 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+
+  /**
+   * our motor. we preface the variables with m_ because of hungarian notation.
+   * hungarian notation is one of the world's true evils, second only to java itself
+   * in fact, torvalds once called hungarian notation "brain damaged", and i can only agree
+   */
+  private final Motor<PWMVictorSPX> m_motor = new Motor<PWMVictorSPX>(PWMVictorSPX::new, 0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -77,9 +85,18 @@ public class Robot extends TimedRobot {
     }
   }
 
+  /**
+   * a jank counter of how many teleop ticks have happened
+   */
+  private long tick = 0;
+
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if (++tick <= 1000) {
+      m_motor.setPower(Math.min(0.001 * (double) tick, 1.));
+    }
+  }
 
   @Override
   public void testInit() {

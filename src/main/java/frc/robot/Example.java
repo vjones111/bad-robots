@@ -1,5 +1,8 @@
 package frc.robot;
 
+// all of them
+import frc.robot.things.*;
+
 public class Example {
     private static long square(long a) {
         return a * a;
@@ -20,6 +23,15 @@ public class Example {
             tb.CubeMe() +
             " but " +
             ta.Add(tb).CubeMe()
+        );
+
+        
+        Triangle tri = new Triangle(5, 12);
+        System.out.println(
+            "hypot of " +
+            tri.x + ", " +
+            tri.y + ": " +
+            tri.hypot()
         );
     }        
 }

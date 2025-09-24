@@ -42,5 +42,15 @@ public class Example {
         System.out.println("The food is the " + food.getName());
         food.Eat();
         System.out.println("The food is now " + food.getName());
+
+        System.out.println(); // ouchie i broke the line
+
+        RocketShip missile = new RocketShip();
+        missile.setSpeed(10);
+        System.out.println("sped up to " + missile.getSpeed());
+        missile.Launch();
+        // the height of modern tehcnology: we can launch it more than once
+        missile.setSpeed(123);
+        missile.Launch();
     }
 }

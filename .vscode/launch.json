@@ -9,7 +9,7 @@
       "name": "Example",
       "request": "launch",
       "mainClass": "frc.robot.Example",
-      "projectName": "AAAAAAAAAAAAAAAAAA"
+      "projectName": "bad-robots"
     },
     {
       "type": "wpilib",
